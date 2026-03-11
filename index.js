@@ -245,7 +245,8 @@ export default {
         const result = await searchMemory(cfg, payload);
         const promptBlock = formatPromptBlock(result, { 
           wrapTagBlocks: true,
-          relativity: payload.relativity 
+          relativity: payload.relativity,
+          maxItemChars: cfg.maxItemChars
         });
         if (!promptBlock) return;
 
