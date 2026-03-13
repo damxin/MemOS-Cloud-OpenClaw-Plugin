@@ -4,7 +4,7 @@ import {
   buildConfig,
   extractResultData,
   extractText,
-  formatPromptBlockFromData,
+  formatRecallHookResult,
   USER_QUERY_MARKER,
   searchMemory,
 } from "./lib/memos-cloud-api.js";
@@ -438,16 +438,14 @@ export default {
         const resultData = extractResultData(result);
         if (!resultData) return;
         const filteredData = await maybeFilterRecallData(cfg, resultData, event.prompt, log);
-        const promptBlock = formatPromptBlockFromData(filteredData, {
+        const hookResult = formatRecallHookResult({ data: filteredData }, {
           wrapTagBlocks: true,
           relativity: payload.relativity,
           maxItemChars: cfg.maxItemChars,
         });
-        if (!promptBlock) return;
+        if (!hookResult.appendSystemContext && !hookResult.prependContext) return;
 
-        return {
-          prependContext: promptBlock,
-        };
+        return hookResult;
       } catch (err) {
         log.warn?.(`[memos-cloud] recall failed: ${String(err)}`);
       }

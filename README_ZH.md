@@ -156,7 +156,7 @@ MEMOS_API_KEY=YOUR_TOKEN
   - 默认**全局召回**：`recallGlobal=true` 时不传 `conversation_id`
   - 可选 `filter` / `knowledgebase_ids`
 - （可选）若开启 `recallFilterEnabled`，会先把 `memory/preference/tool_memory` 候选发给你配置的模型做二次筛选，只保留 `keep` 的条目
-- 再按 MemOS 提示词模板（Role/System/Memory/Skill/Protocols）拼装，并通过 `prependContext` 注入
+- 将稳定的 MemOS 召回协议通过 `appendSystemContext` 注入，而检索到的 `<memories>` 数据块继续通过 `prependContext` 注入
 
 ### 2) 添加（agent_end）
 - 默认只写**最后一轮**（user + assistant）

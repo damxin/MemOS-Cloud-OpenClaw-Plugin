@@ -154,7 +154,7 @@ In `plugins.entries.memos-cloud-openclaw-plugin.config`:
   - Builds a `/search/memory` request using `user_id`, `query` (= prompt + optional prefix), and optional filters.
   - Default **global recall**: when `recallGlobal=true`, it does **not** pass `conversation_id`.
   - Optional second-pass filtering: if `recallFilterEnabled=true`, candidates are sent to your configured model and only returned `keep` items are injected.
-  - Formats a MemOS prompt (Role/System/Memory/Skill/Protocols) from filtered `/search/memory` results, then injects via `prependContext`.
+  - Injects a stable MemOS recall protocol via `appendSystemContext`, while the retrieved `<memories>` block remains in `prependContext`.
 
 - **Add** (`agent_end`)
   - Builds a `/add/message` request with the **last turn** by default (user + assistant).
