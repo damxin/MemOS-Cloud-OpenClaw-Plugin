@@ -94,14 +94,30 @@ function buildSearchPayload(cfg, prompt, ctx) {
   const agentId = getEffectiveAgentId(cfg, ctx);
 
   if (agentId) {
-    if (filterObj) {
-      if (Array.isArray(filterObj.and)) {
-        filterObj.and.push({ agent_id: agentId });
+    const sharedTag = cfg.sharedScopeTag;
+    if (sharedTag) {
+      // Shared + private mode: include shared memories AND current agent's private memories
+      const scopeFilter = { or: [{ scope: sharedTag }, { agent_id: agentId }] };
+      if (filterObj) {
+        if (Array.isArray(filterObj.and)) {
+          filterObj.and.push(scopeFilter);
+        } else {
+          filterObj = { and: [filterObj, scopeFilter] };
+        }
       } else {
-        filterObj = { and: [filterObj, { agent_id: agentId }] };
+        filterObj = scopeFilter;
       }
     } else {
-      filterObj = { agent_id: agentId };
+      // Original behavior: only current agent's memories
+      if (filterObj) {
+        if (Array.isArray(filterObj.and)) {
+          filterObj.and.push({ agent_id: agentId });
+        } else {
+          filterObj = { and: [filterObj, { agent_id: agentId }] };
+        }
+      } else {
+        filterObj = { agent_id: agentId };
+      }
     }
   }
 
@@ -134,10 +150,14 @@ function buildAddMessagePayload(cfg, messages, ctx) {
 
   const info = {
     source: "openclaw",
-    sessionKey: ctx?.sessionKey,
-    agentId: ctx?.agentId,
+    session_key: ctx?.sessionKey,
+    agent_id: ctx?.agentId,
     ...(cfg.info || {}),
   };
+  // Auto-tag with defaultScope (e.g. "private") if configured
+  if (cfg.defaultScope && !info.scope) {
+    info.scope = cfg.defaultScope;
+  }
   if (Object.keys(info).length > 0) payload.info = info;
 
   payload.allow_public = cfg.allowPublic;
