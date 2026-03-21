@@ -162,6 +162,10 @@
       "throttleMs": {
         "type": "integer",
         "default": 0
+      },
+      "disableUpdateCheck": {
+        "type": "boolean",
+        "default": false
       }
     },
     "additionalProperties": false

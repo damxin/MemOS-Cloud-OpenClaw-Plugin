@@ -418,8 +418,10 @@ export default {
     const cfg = buildConfig(api.pluginConfig);
     const log = api.logger ?? console;
 
-    // Start 12-hour background update interval
-    startUpdateChecker(log);
+    // Start 12-hour background update interval (unless disabled via config)
+    if (!cfg.disableUpdateCheck) {
+      startUpdateChecker(log);
+    }
 
     if (!cfg.envFileStatus?.found) {
       const searchPaths = cfg.envFileStatus?.searchPaths?.join(", ") ?? ENV_FILE_SEARCH_HINTS.join(", ");
